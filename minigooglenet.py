@@ -10,6 +10,7 @@ from tensorflow.keras.layers import (
 	Activation,
 	Concatenate
 )
+from tensorflow.keras.regularizers import l2
 from tensorflow.keras.models import Model
 from tensorflow.keras import Input
 from tensorflow import keras as K
