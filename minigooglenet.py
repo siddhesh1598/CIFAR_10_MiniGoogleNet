@@ -17,9 +17,9 @@ from tensorflow import keras as K
 class MiniGoogleNet:
 
 	@staticmethod
-	def conv_module(x, K, kx, kY, stride, padding="same"):
+	def conv_module(x, K, kX, kY, stride, padding="same"):
 		# CONV => RELU => BN
-		x = Conv2D(K, (kx, ky), strides=stride, 
+		x = Conv2D(K, (kX, kY), strides=stride, 
 			padding=padding)(x)
 		x = Activation("relu")(x)
 		x = BatchNormalization()(x)
@@ -40,7 +40,7 @@ class MiniGoogleNet:
 	def downsample_module(x, K):
 		conv_3x3 = MiniGoogleNet.conv_module(x, K, 
 			3, 3, (2, 2), padding="valid")
-		pool = MaxPooling2D((3, 3), stride=(2, 2))(x)
+		pool = MaxPooling2D((3, 3), strides=(2, 2))(x)
 		x = Concatenate(axis=-1)([conv_3x3, pool])
 
 		return x
@@ -56,7 +56,7 @@ class MiniGoogleNet:
 
 		# INCEPTION x 2 => DOWNSAMPLE
 		x = MiniGoogleNet.inception_module(x, 32, 32)
-		x = MiniGoogleNet.inception_module(x, 32, 32)
+		x = MiniGoogleNet.inception_module(x, 32, 48)
 		x = MiniGoogleNet.downsample_module(x, 80)
 
 		# INCEPTION x 4 => DOWNSAMPLE
@@ -65,11 +65,6 @@ class MiniGoogleNet:
 		x = MiniGoogleNet.inception_module(x, 80, 80)
 		x = MiniGoogleNet.inception_module(x, 48, 96)
 		x = MiniGoogleNet.downsample_module(x, 96)
-
-		# INCEPTION x 2 => DOWNSAMPLE
-		x = MiniGoogleNet.inception_module(x, 32, 32)
-		x = MiniGoogleNet.inception_module(x, 32, 32)
-		x = MiniGoogleNet.downsample_module(x, 80) 
 
 		# INCEPTION x 2 => AVGPOOL => DROPOUT
 		x = MiniGoogleNet.inception_module(x, 176, 160)
